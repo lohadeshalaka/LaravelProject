@@ -28,9 +28,9 @@ class FileUpload extends Controller
             $fileModel->save();
 			 // Send email notification with file details
 			   Mail::send([], [], function ($message) use ($fileName) {
-            $message->to('recipient@example.com')
+            $message->to('notify@test.test')
                     ->subject('New file upload')
-                    ->attach(public_path('uploads/' . $fileName));
+                    ->attach(public_path('uploads/public/' . $fileName));
         });
 
         return back()->with('success', 'File has been uploaded successfully and sent to recipient.');
