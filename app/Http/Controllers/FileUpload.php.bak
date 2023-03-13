@@ -2,14 +2,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
-use App\Notifications\EmailNotification;
+use Illuminate\Support\Facades\Mail;
 use App\Models\File;
-
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use App\Invite;
 class FileUpload extends Controller
 {
   public function createForm(){
@@ -33,14 +27,13 @@ class FileUpload extends Controller
 			$fileModel->s3_object_id = 1;
             $fileModel->save();
 			 // Send email notification with file details
-			$fileUrl = asset($filePath);
-			$fileSize = round($fileModel->size/1024, 2).' KB';
-			$fileType = pathinfo($filePath, PATHINFO_EXTENSION);
-			Mail::to('notify@test.test')->send(new FileUploadNotification($fileModel->name, $fileUrl, $fileSize, $fileType));
-			return response()->json(['status' => 'success', 'file_path' => $filePath, 'file_id' => $fileDetails->id]);
-			//return back()
-            //->with('success','File has been uploaded.')
-            //->with('file', $fileName);
+			   Mail::send([], [], function ($message) use ($filename) {
+            $message->to('recipient@example.com')
+                    ->subject('New file upload')
+                    ->attach(public_path('uploads/' . $filename));
+        });
+
+        return back()->with('success', 'File has been uploaded successfully and sent to recipient.');
         }
    }
 }
